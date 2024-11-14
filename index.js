@@ -183,32 +183,36 @@ app.patch("/jokes/:id", (req, res) => {
 
 //7. DELETE Specific joke
 app.delete("/jokes/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const searchIndex = jokes.findIndex((joke) => joke.id === id);
-  if(searchIndex > -1 ){
-    joke.splice(searchIndex, 1);
-    res.sendStatus(200);
-  }else{
+  const id = parseInt(req.params.id); // Extract and convert `id` parameter from URL to an integer.
+
+  const searchIndex = jokes.findIndex((joke) => joke.id === id); // Find the index of the joke with the specified `id`.
+
+  if (searchIndex > -1) { // Check if a joke with the given `id` exists in the array.
+    jokes.splice(searchIndex, 1); // Remove the joke at the found index from the `jokes` array.
+    res.sendStatus(200); // Send a 200 OK status to indicate successful deletion.
+  } else {
     res
-      .status(404)
-      .json({error: `Joke with ID: ${id} not found.
-        No Jokes were deleted` });
+      .status(404) // Send a 404 Not Found status if the joke with the specified `id` was not found.
+      .json({ error: `Joke with ID: ${id} not found. No jokes were deleted.` }); // Send error message.
   }
 });
 
 
+
 //8. DELETE All jokes
 app.delete("/all", (req, res) => {
-  const userKey = req.query.key;
-  if(userKey === masterKey){
-    jokes = [];
-    res.sendStatus(200);
-  }else {
+  const userKey = req.query.key; // Retrieve the key from the query parameter to verify authorization.
+
+  if (userKey === masterKey) { // Check if the provided key matches the master key for authorization.
+    jokes.length = 0; // Clear the `jokes` array by setting its length to 0.
+    res.sendStatus(200); // Send a 200 OK status to indicate successful deletion.
+  } else {
     res
-      .status(404)
-      .json({error: `Your are not authorised to perform this action`})
+      .status(403) // Use 403 Forbidden status to indicate lack of authorization.
+      .json({ error: `You are not authorized to perform this action` }); // Send an error message.
   }
-})
+});
+
 
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
