@@ -149,30 +149,37 @@ app.get("/random", (req, res) => {
 
 //6. PATCH a joke
 
-app.patch("/jokes/:id", (req, res) =>{
-  const id = parseInt(req.params.id);
-  const existingJoke = jokes((joke) => joke.id === id);
+app.patch("/jokes/:id", (req, res) => {
+  const id = parseInt(req.params.id); // Extract and convert the `id` parameter from the URL to an integer.
+
+  const existingJoke = jokes.find((joke) => joke.id === id); // Find the existing joke in the array that matches the provided `id`.
+
+  // Create a new joke object with the same id, replacing only provided fields, keeping old values for any fields not provided.
   const replacementJoke = {
     id: id,
-    jokeText: req.body.text || existingJoke.jokeText,
-    jokeType: req.body.type || existingJoke.jokeType,
+    jokeText: req.body.text || existingJoke.jokeText, // Use `req.body.text` if provided, otherwise use existing joke text.
+    jokeType: req.body.type || existingJoke.jokeType, // Use `req.body.type` if provided, otherwise use existing joke type.
   };
-  const searchIndex = jokes.findIndex((joke) => joke.id === id);
-  jokes[searchIndex] = replacementJoke;
-  console.log(jokes[searchIndex]);
-  if (replacementJoke){
+
+  const searchIndex = jokes.findIndex((joke) => joke.id === id); // Find the index of the joke to replace in the `jokes` array.
+  jokes[searchIndex] = replacementJoke; // Replace the old joke at the found index with the new joke object.
+  
+  console.log(jokes[searchIndex]); // Log the updated joke to verify the replacement.
+
+  // Send response based on whether replacementJoke was created successfully.
+  if (replacementJoke) {
     res.status(201).json({
-      message: "Joke put successfully",
+      message: "Joke updated successfully", // Respond with success message and updated joke data.
       data: replacementJoke,
     });
   } else {
     res.status(400).json({
-      message: "Failed to put the joke",
+      message: "Failed to update the joke", // Respond with failure message if replacement was unsuccessful.
       data: null
     });
   }
-
 });
+
 
 //7. DELETE Specific joke
 
