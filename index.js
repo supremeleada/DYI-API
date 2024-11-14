@@ -149,6 +149,31 @@ app.get("/random", (req, res) => {
 
 //6. PATCH a joke
 
+app.patch("/jokes/:id", (req, res) =>{
+  const id = parseInt(req.params.id);
+  const existingJoke = jokes((joke) => joke.id === id);
+  const replacementJoke = {
+    id: id,
+    jokeText: req.body.text || existingJoke.jokeText,
+    jokeType: req.body.type || existingJoke.jokeType,
+  };
+  const searchIndex = jokes.findIndex((joke) => joke.id === id);
+  jokes[searchIndex] = replacementJoke;
+  console.log(jokes[searchIndex]);
+  if (replacementJoke){
+    res.status(201).json({
+      message: "Joke put successfully",
+      data: replacementJoke,
+    });
+  } else {
+    res.status(400).json({
+      message: "Failed to put the joke",
+      data: null
+    });
+  }
+
+});
+
 //7. DELETE Specific joke
 
 //8. DELETE All jokes
